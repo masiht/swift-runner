@@ -15,8 +15,7 @@
 </head>
 <body>
     <div>
-        <textarea rows="4" cols="50">print("Hello World")
-        </textarea>
+        <textarea rows="4" cols="50" id="source_code"></textarea>
     </div>
 
     <div>
@@ -26,12 +25,32 @@
             <button type="button" class="btn btn-default active" >4.0</button>
         </div>
 
-        <button type="button" class="btn btn-default">Run</button>
+        <button type="button" class="btn btn-default" id="run">Run</button>
     </div>
-
-
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+
+    <script>
+        $('#run').click(function() {
+
+            var source_code = $("#source_code").val()
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                // FIXME: get url from config file
+                "url": "http://127.0.0.1:8081/swiftrunner/playground",
+                "method": "POST",
+                "headers": {
+                    "content-type": "text/plain",
+                    },
+                "data": source_code
+            }
+
+            $.ajax(settings).done(function (response) {
+              console.log(response);
+            });
+        });
+    </script>
 </body>
 </html>
