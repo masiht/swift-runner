@@ -2,55 +2,94 @@
 <html lang="en" class="no-js">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="">
+    <meta name="description" content="An online compiler for Swift">
+    <meta name="keywords" content="Swift, Run Swift online, online Swift Compiler, swift code">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="css/style.css"> <!-- Resource style -->
+    <link rel="stylesheet" href="css/style.css">
     <link rel='stylesheet' href="css/bootstrap.css" type='text/css'>
     <link rel='stylesheet' href="css/font-awesome.min.css" type='text/css'>
+    <link rel="stylesheet" href="css/jquery-linedtextarea.css" type="text/css"/>
     <title>Swift Runner</title>
     <link rel="shortcut icon" href="img/favicon.png" />
 </head>
 <body>
-    <div>
-        <textarea rows="4" cols="50" id="source_code"></textarea>
-    </div>
+    <div class="main-container">
+        <header class="cd-header">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="index.html">Swift Runner</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="index.html">Online Compiler</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
 
-    <div>
-        <div class="btn-group" role="group" aria-label="...">
-            <button type="button" class="btn btn-default" disabled>2.2</button>
-            <button type="button" class="btn btn-default" disabled>3.1</button>
-            <button type="button" class="btn btn-default active" >4.0</button>
-        </div>
+        <div id="source-code-container">
+            <textarea rows="20" cols="50" id="source-code" autofocus></textarea>
+        </div> <!-- source-code-container -->
 
-        <button type="button" class="btn btn-default" id="run">Run</button>
-    </div>
+        <div class="version-selector">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default">2.2</button>
+                <button type="button" class="btn btn-default">3.1</button>
+                <button type="button" class="btn btn-warning active version">4.0</button>
+            </div>
+
+            <button type="button" class="btn btn-default" id="run">
+                <span class="glyphicon glyphicon-play"></span>
+            </button>
+        </div> <!-- version-selector -->
+
+        <div id="results-container">
+            <textarea rows="10" cols="50" id="results"></textarea>
+        </div> <!-- results-container -->
+    </div> <!-- main-container -->
 
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-linedtextarea.js"></script>
+    <script src="js/app-config.js"></script>
 
     <script>
-        $('#run').click(function() {
+        $(function() {
+          $("#source-code").linedtextarea();
+        });
 
-            var source_code = $("#source_code").val()
+        // version selector
+        $('.version-selector').find('.btn-group').find('.btn').click(function() {
+            if (!$(this).is( ".version" )) {
+                $(this).parent().find('.active').removeClass("btn-warning active version").addClass("btn-default");
+                $(this).removeClass("btn-default").addClass("btn-warning active version");
+            }
+        });
+
+        // ajax call -- compile
+        $('#run').click(function() {
+            var source_code = $("#source-code").val()
             var settings = {
                 "async": true,
                 "crossDomain": true,
-                // FIXME: get url from config file
-                "url": "http://127.0.0.1:8081/swiftrunner/playground",
+                "url": config.playgroundUrl,
                 "method": "POST",
                 "headers": {
-                    "content-type": "text/plain",
+                    "content-type": "text/plain"
                     },
                 "data": source_code
             }
 
             $.ajax(settings).done(function (response) {
-              console.log(response);
+                $('#results').text(response)
             });
         });
+
+        function getCompilerVersion() {
+            return $(".version").text()
+        }
     </script>
 </body>
 </html>
