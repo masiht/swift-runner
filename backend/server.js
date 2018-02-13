@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var rn = require('random-number');
 var exec = require('child_process').exec;
+var config = require('./config.json');
 var app = express();
 
 app.listen(8081);
@@ -19,20 +20,17 @@ app.post("/swiftrunner/playground", function(req, res) {
 	const source_code = req.body;
     const rand = rn.generator({min:  1, max:  1000, integer: true})()
 
-    // FIXME: add a directory to store source code, get the directory from config
     // FIXME: check if the number already exist
-    // TODO: cleanup
-    var filename = rand + ".swift"
-    console.log(filename);
+    var source_file = config.storage_directory + "/" + rand + ".swift"
 
-    fs.writeFile(filename, source_code, function(error) {
+    fs.writeFile(source_file, source_code, function(error) {
         if (error) { return console.log(error); }
 
-        var compile_script = exec('swift ' + filename, function(error, stdout, stderr) {
-            if (error !== null) { return console.log(error); }
-            // FIXME: error handling
-            console.log(stdout);
-
+        var compile_script = exec('swift ' + source_file, function(error, stdout, stderr) {
+            if (error !== null) {
+                res.send(String(error));
+                return console.log(error);
+            }
             res.send(stdout);
         });
     });
