@@ -46,7 +46,7 @@
         </div> <!-- version-selector -->
 
         <div id="results-container">
-            <textarea rows="10" cols="50" id="results"></textarea>
+            <textarea rows="10" cols="50" id="results" readonly></textarea>
         </div> <!-- results-container -->
     </div> <!-- main-container -->
 
@@ -77,18 +77,19 @@
                 "url": config.playgroundUrl,
                 "method": "POST",
                 "headers": {
-                    "content-type": "text/plain"
+                    "Compile-Version": getCompilerVersion(),
+                    "Content-Type": "text/plain"
                     },
                 "data": source_code
             }
 
             $.ajax(settings).done(function (response) {
-                $('#results').text(response)
+                $('#results').text(response);
             });
         });
 
         function getCompilerVersion() {
-            return $(".version").text()
+            return String($(".version").text());
         }
     </script>
 </body>
